@@ -140,37 +140,6 @@
     transition: border-color .15s, color .15s;
   }
   .product-link:hover{border-bottom-color:var(--accent); color:#bae6fd}
-
-  .modal-overlay{
-    position:fixed; inset:0; z-index:100;
-    background:rgba(0,0,0,.65); backdrop-filter:blur(6px);
-    display:flex; align-items:center; justify-content:center;
-    padding:24px;
-    opacity:0; pointer-events:none; transition: opacity .2s;
-  }
-  .modal-overlay.open{opacity:1; pointer-events:auto}
-  .modal-card{
-    background: linear-gradient(180deg, rgba(16,24,38,.97), rgba(15,23,34,.97));
-    border:1px solid var(--line); border-radius:var(--radius);
-    box-shadow: 0 20px 60px rgba(0,0,0,.55);
-    max-width:480px; width:100%;
-    transform:translateY(12px); transition: transform .2s;
-  }
-  .modal-overlay.open .modal-card{transform:translateY(0)}
-  .modal-header{
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    padding:14px 16px; border-bottom:1px solid var(--line);
-    background:rgba(15,23,34,.65);
-  }
-  .modal-header h3{margin:0; font-size:14px; letter-spacing:.2px}
-  .modal-close{
-    background:none; border:1px solid var(--line); border-radius:10px;
-    color:var(--muted); width:32px; height:32px; display:grid; place-items:center;
-    cursor:pointer; font-size:16px; padding:0; line-height:1;
-  }
-  .modal-close:hover{color:var(--text); border-color:var(--accent)}
-  .modal-body{padding:16px; color:var(--muted); font-size:13px; line-height:1.6}
-  .modal-body b{color:var(--text)}
 </style>
 </head>
 <body>
@@ -257,16 +226,6 @@
 <div class="toast" id="toast" role="status" aria-live="polite">
   <strong id="toastTitle">Notice</strong>
   <p id="toastMsg"></p>
-</div>
-
-<div class="modal-overlay" id="productModal">
-  <div class="modal-card">
-    <div class="modal-header">
-      <h3 id="modalTitle">Product</h3>
-      <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
-    </div>
-    <div class="modal-body" id="modalBody"></div>
-  </div>
 </div>
 
 <script>
@@ -358,68 +317,39 @@
   };
 
   // -----------------------------
-  // Product info (for modal pop‑ups)
+  // Product page URLs (drsturm.com) — open in new tab on click
   // -----------------------------
-  const PRODUCT_INFO = {
-    "CLEANSER": "<b>Dr. Barbara Sturm CLEANSER</b><br><br>A gentle, pH‑balanced foaming cleanser that removes impurities without stripping the skin's natural moisture barrier. Suitable for all skin types.<br><br><b>Key ingredients:</b> Purslane (anti‑inflammatory), mild sugar‑based surfactants.<br><b>Usage:</b> 2–3 pumps, morning and evening. Massage onto damp skin, rinse thoroughly.",
-
-    "SUPER ANTI‑AGING CLEANSING CREAM": "<b>Dr. Barbara Sturm SUPER ANTI‑AGING CLEANSING CREAM</b><br><br>A rich, cream‑based cleanser formulated for mature or dry skin. Dissolves make‑up and impurities while delivering anti‑aging actives during the cleanse step.<br><br><b>Key ingredients:</b> Purslane, Skullcap, Hyaluronic Acid.<br><b>Usage:</b> 1 grape‑sized amount, massage gently, remove with warm cloth or rinse.",
-
-    "MAKE‑UP REMOVER": "<b>Dr. Barbara Sturm MAKE‑UP REMOVER</b><br><br>A bi‑phase formula that lifts waterproof make‑up and SPF without tugging the skin. Used as the first cleanse step when the client wears make‑up.<br><br><b>Usage:</b> Shake well, apply with cotton pad, press gently and sweep away.",
-
-    "BALANCING TONER": "<b>Dr. Barbara Sturm BALANCING TONER</b><br><br>An alcohol‑free toner that restores the skin's pH after cleansing and preps the skin for better serum absorption. Calming and hydrating.<br><br><b>Key ingredients:</b> Purslane, Panthenol, Aloe Vera.<br><b>Usage:</b> 3 pumps onto cotton pad or hands, press into skin.",
-
-    "ENZYME CLEANSER": "<b>Dr. Barbara Sturm ENZYME CLEANSER</b><br><br>A powder‑to‑foam exfoliant using fruit enzymes to dissolve dead skin cells without mechanical abrasion. Ideal for sensitive, acne‑prone, or inflamed skin where scrubs are contraindicated.<br><br><b>Key ingredients:</b> Fruit enzymes (Papain, Bromelain), Cellulose.<br><b>Usage:</b> Mix with water in palm, apply to damp skin, massage 60 seconds, rinse. 2–3 times per week max.",
-
-    "FACIAL SCRUB": "<b>Dr. Barbara Sturm FACIAL SCRUB</b><br><br>A mechanical exfoliant with fine natural particles. Provides deeper surface exfoliation for non‑sensitive, non‑inflamed skin. Do NOT use on active acne, redness, or compromised barriers.<br><br><b>Key ingredients:</b> Purslane, natural micro‑granules.<br><b>Usage:</b> Apply to damp skin, gentle circular motions, rinse. 1–2 times per week.",
-
-    "HYALURONIC AMPOULE": "<b>Dr. Barbara Sturm HYALURONIC AMPOULE</b><br><br>A concentrated dose of short‑ and long‑chain Hyaluronic Acid for deep hydration. Acts as a hydration booster and absorption enhancer for subsequent serums.<br><br><b>Key ingredients:</b> Low‑ and high‑molecular‑weight Hyaluronic Acid, Purslane.<br><b>Usage in treatment:</b> Split across two steps (3/4 before massage, 1/4 after mask).",
-
-    "FACE MASK": "<b>Dr. Barbara Sturm FACE MASK</b><br><br>A creamy, deeply hydrating mask that calms, soothes, and restores the skin after exfoliation and extractions. Leaves skin plump and luminous.<br><br><b>Key ingredients:</b> Purslane, Chamomile, Aloe Vera, Hyaluronic Acid.<br><b>Usage:</b> 1 walnut‑sized amount, leave on 10 minutes.",
-
-    "MASSAGE CREAM": "<b>Dr. Barbara Sturm MASSAGE CREAM</b><br><br>A rich, slip‑providing cream designed for professional facial massage. Nourishes the skin during massage without clogging pores.<br><br><b>Usage:</b> Apply generously for massage steps (15–20 min depending on treatment).",
-
-    "ANTI‑AGING BODY CREAM": "<b>Dr. Barbara Sturm ANTI‑AGING BODY CREAM</b><br><br>A luxurious body cream with anti‑aging actives. Used during treatment for the arm and hand massage while the face mask is on.<br><br><b>Key ingredients:</b> Purslane, Hyaluronic Acid, Vitamin E.<br><b>Usage:</b> Apply generously during arm/hand massage.",
-
-    "EYE CREAM": "<b>Dr. Barbara Sturm EYE CREAM</b><br><br>A lightweight eye cream that targets fine lines, puffiness, and dark circles. Gentle enough for the delicate periorbital area.<br><br><b>Key ingredients:</b> Purslane, Hyaluronic Acid, Golden Root.<br><b>Usage:</b> 0.7 pea‑sized amount, pat gently around orbital bone.",
-
-    "LIGHT CREAM": "<b>Dr. Barbara Sturm LIGHT CREAM</b><br><br>A lightweight, oil‑free moisturiser ideal for oily, combination, or acne‑prone skin. Hydrates without heaviness or pore congestion.<br><br><b>Key ingredients:</b> Purslane, Hyaluronic Acid, Skullcap.<br><b>Usage:</b> Apply after serums, morning and evening.",
-
-    "GLOW CREAM": "<b>Dr. Barbara Sturm GLOW CREAM</b><br><br>A radiance‑boosting moisturiser that combines hydration with a subtle luminous finish. The signature finishing cream for STURMGLOW treatments.<br><br><b>Key ingredients:</b> Purslane, Wild Rose, Vitamin E, light‑reflecting pigments.<br><b>Usage:</b> 1 peanut‑sized amount after serums.",
-
-    "SUPER ANTI‑AGING SERUM": "<b>Dr. Barbara Sturm SUPER ANTI‑AGING SERUM</b><br><br>An advanced anti‑aging serum with concentrated actives to address fine lines, loss of firmness, and skin fatigue. Flagship product of the Super Anti‑Aging line.<br><br><b>Key ingredients:</b> Purslane, Skullcap, Hyaluronic Acid, Telomere‑protecting complex.<br><b>Usage:</b> 4–5 drops, press into skin.",
-
-    "SUPER ANTI‑AGING EYE SERUM": "<b>Dr. Barbara Sturm SUPER ANTI‑AGING EYE SERUM</b><br><br>A potent eye serum targeting deep wrinkles, loss of elasticity, and volume loss around the eye area. More intensive than the standard Eye Cream.<br><br><b>Key ingredients:</b> Purslane, Skullcap, regional Hyaluronic Acid.<br><b>Usage:</b> 2 drops per eye, pat gently.",
-
-    "SUPER ANTI‑AGING EYE CREAM": "<b>Dr. Barbara Sturm SUPER ANTI‑AGING EYE CREAM</b><br><br>A rich, nourishing eye cream for mature skin. Provides deep hydration and firming to the delicate eye contour area.<br><br><b>Key ingredients:</b> Purslane, Skullcap, concentrated Hyaluronic Acid.<br><b>Usage:</b> 0.7 pea‑sized, pat around orbital bone after eye serum.",
-
-    "SUPER ANTI‑AGING FACE CREAM": "<b>Dr. Barbara Sturm SUPER ANTI‑AGING FACE CREAM</b><br><br>The most intensive moisturiser in the Dr. Sturm range. Rich texture designed for mature or dry skin needing maximum nourishment and anti‑aging support.<br><br><b>Key ingredients:</b> Purslane, Skullcap, concentrated Hyaluronic Acid, Telomere‑protecting complex.<br><b>Usage:</b> 1 peanut‑sized amount as final cream step.",
-
-    "SUPER ANTI‑AGING NECK & DÉCOLLETÉ CREAM": "<b>Dr. Barbara Sturm SUPER ANTI‑AGING NECK & DÉCOLLETÉ CREAM</b><br><br>A specialised cream for the often‑neglected neck and chest area. Firms, hydrates, and addresses crepiness and lines.<br><br><b>Key ingredients:</b> Purslane, Skullcap, firming peptides.<br><b>Usage:</b> 1 peanut‑sized, sweep upwards from décolleté to jawline.",
-
-    "EXOSO‑METIC EYE SERUM": "<b>Dr. Barbara Sturm EXOSO‑METIC EYE SERUM</b><br><br>A cutting‑edge eye serum powered by exosome technology for advanced cellular regeneration around the eye area. Part of the Exoso‑Metic Growth Factor treatment line.<br><br><b>Key ingredients:</b> Exosome complex, growth factors, Hyaluronic Acid.<br><b>Usage:</b> 1 pump per eye, pat gently. Apply after microneedling step.",
-
-    "EXOSO‑METIC FACE SERUM": "<b>Dr. Barbara Sturm EXOSO‑METIC FACE SERUM</b><br><br>The flagship serum of the Exoso‑Metic line. Uses exosome technology to deliver growth factors deep into the skin for intensive cellular renewal and repair.<br><br><b>Key ingredients:</b> Exosome complex, growth factors, Purslane, Hyaluronic Acid.<br><b>Usage:</b> 1.5 pumps, press into skin after microneedling/microchanneling.",
-
-    "THE BETTER B SERUM": "<b>Dr. Barbara Sturm THE BETTER B SERUM</b><br><br>A targeted serum with Niacinamide (Vitamin B3) that regulates sebum, minimises pores, and strengthens the skin barrier. First‑choice serum for oily and acne‑prone skin.<br><br><b>Key ingredients:</b> Niacinamide, Purslane, Zinc PCA.<br><b>Usage:</b> 3–4 drops, press into skin. Can be used AM and PM.",
-
-    "CALMING SERUM": "<b>Dr. Barbara Sturm CALMING SERUM</b><br><br>An anti‑inflammatory serum that reduces redness, irritation, and sensitivity. Essential for inflamed acne, razor burn, barrier damage, or any reactive skin state.<br><br><b>Key ingredients:</b> Purslane (high concentration), Echium Oil, Cardiospermum.<br><b>Usage:</b> 3–4 drops, press into skin. Safe for AM and PM use.",
-
-    "LIFTING SERUM": "<b>Dr. Barbara Sturm LIFTING SERUM</b><br><br>A firming serum that provides an instant tightening effect and long‑term collagen support. <b>Important:</b> Always apply AFTER moisturiser, not before.<br><br><b>Key ingredients:</b> Purslane, Skullcap, lifting peptides.<br><b>Usage:</b> 3–4 drops over moisturiser. Not for inflamed or very sensitive skin.",
-
-    "THE GOOD VITAMIN C SERUM": "<b>Dr. Barbara Sturm THE GOOD VITAMIN C SERUM</b><br><br>A stable Vitamin C serum for brightening, evening skin tone, and antioxidant protection. Addresses hyperpigmentation and post‑acne marks. Avoid on actively inflamed skin.<br><br><b>Key ingredients:</b> Stable Vitamin C, Purslane, Hyaluronic Acid.<br><b>Usage:</b> 3–4 drops AM, press into skin before moisturiser.",
-
-    "ANTI‑POLLUTION DROPS": "<b>Dr. Barbara Sturm ANTI‑POLLUTION DROPS</b><br><br>A protective finishing serum that shields the skin from environmental stressors (pollution, blue light). Used as a final layer before leaving the treatment room.<br><br><b>Key ingredients:</b> Purslane, Cocoa Seed extract, antioxidant complex.<br><b>Usage:</b> 2–3 drops as finishing step.",
-
-    "GLOW DROPS": "<b>Dr. Barbara Sturm GLOW DROPS</b><br><br>A luminising finishing serum that delivers an instant healthy glow. Can be mixed with moisturiser or applied as a final step.<br><br><b>Key ingredients:</b> Purslane, flora‑based oils, light‑reflecting particles.<br><b>Usage:</b> 2–3 drops as finishing step or mixed into cream.",
-
-    "SUN DROPS SPF 50": "<b>Dr. Barbara Sturm SUN DROPS SPF 50</b><br><br>A lightweight, non‑greasy SPF 50 sunscreen that layers seamlessly over serums and moisturiser. Essential as the final daytime step to protect skin from UV damage.<br><br><b>Key ingredients:</b> Broad‑spectrum UV filters, Purslane, Cassia extract.<br><b>Usage:</b> Generous application as last step every morning. Reapply every 2 hours if outdoors.",
-
-    "LIP BALM": "<b>Dr. Barbara Sturm LIP BALM</b><br><br>A nourishing lip treatment that hydrates and protects the lips. Completes the facial treatment with care for this often‑overlooked area.<br><br><b>Key ingredients:</b> Purslane, natural waxes, Vitamin E.<br><b>Usage:</b> 0.5 pea‑sized amount, apply to lips.",
-
-    "HYALURONIC FACE MIST": "<b>Dr. Barbara Sturm HYALURONIC FACE MIST</b><br><br>A refreshing Hyaluronic Acid mist that locks in all previous layers and provides an instant hydration boost. The final \"seal\" of every treatment.<br><br><b>Key ingredients:</b> Hyaluronic Acid, Purslane, Aloe Vera.<br><b>Usage:</b> 3 pumps, mist over completed look. Keep 20 cm distance.",
-
-    "SKIN SUPER ANTI‑AGING": "<b>Dr. Barbara Sturm SKIN SUPER ANTI‑AGING SUPPLEMENTS</b><br><br>An oral supplement designed to support skin health from within. Contains antioxidants and anti‑inflammatory compounds that complement topical treatments.<br><br><b>Key ingredients:</b> Purslane extract, Hyaluronic Acid, antioxidant complex.<br><b>Usage:</b> 2 capsules daily (optional add‑on for clients)."
+  const PRODUCT_URLS = {
+    "CLEANSER": "https://www.drsturm.com/cleanser/",
+    "SUPER ANTI‑AGING CLEANSING CREAM": "https://www.drsturm.com/super-anti-aging-cleansing-cream/",
+    "MAKE‑UP REMOVER": "https://www.drsturm.com/make-up-remover/",
+    "BALANCING TONER": "https://www.drsturm.com/balancing-toner/",
+    "ENZYME CLEANSER": "https://www.drsturm.com/enzyme-cleanser/",
+    "FACIAL SCRUB": "https://www.drsturm.com/facial-scrub/",
+    "HYALURONIC AMPOULE": "https://www.drsturm.com/hyaluronic-serum/",
+    "FACE MASK": "https://www.drsturm.com/face-mask/",
+    "MASSAGE CREAM": "https://www.drsturm.com/shop-all/",
+    "ANTI‑AGING BODY CREAM": "https://www.drsturm.com/anti-aging-body-cream/",
+    "EYE CREAM": "https://www.drsturm.com/eye-cream/",
+    "LIGHT CREAM": "https://www.drsturm.com/face-cream-light/",
+    "GLOW CREAM": "https://www.drsturm.com/glow-cream/",
+    "SUPER ANTI‑AGING SERUM": "https://www.drsturm.com/super-anti-aging-serum/",
+    "SUPER ANTI‑AGING EYE SERUM": "https://www.drsturm.com/super-anti-aging-eye-serum/",
+    "SUPER ANTI‑AGING EYE CREAM": "https://www.drsturm.com/super-anti-aging-eye-cream/",
+    "SUPER ANTI‑AGING FACE CREAM": "https://www.drsturm.com/super-anti-aging-face-cream/",
+    "SUPER ANTI‑AGING NECK & DÉCOLLETÉ CREAM": "https://www.drsturm.com/super-anti-aging-neck-decollete-cream/",
+    "EXOSO‑METIC EYE SERUM": "https://www.drsturm.com/exoso-metic-eye-serum/",
+    "EXOSO‑METIC FACE SERUM": "https://www.drsturm.com/exoso-metic-face-serum/",
+    "THE BETTER B SERUM": "https://www.drsturm.com/the-better-b-niacinamide-serum/",
+    "CALMING SERUM": "https://www.drsturm.com/calming-serum/",
+    "LIFTING SERUM": "https://www.drsturm.com/lifting-serum/",
+    "THE GOOD VITAMIN C SERUM": "https://www.drsturm.com/the-good-c-vitamin-c-serum/",
+    "ANTI‑POLLUTION DROPS": "https://www.drsturm.com/anti-pollution-drops/",
+    "GLOW DROPS": "https://www.drsturm.com/glow-drops/",
+    "SUN DROPS SPF 50": "https://www.drsturm.com/sun-drops-us/",
+    "LIP BALM": "https://www.drsturm.com/lip-balm/",
+    "HYALURONIC FACE MIST": "https://www.drsturm.com/hyaluronic-face-mist/",
+    "SKIN SUPER ANTI‑AGING": "https://www.drsturm.com/skin-super-anti-aging/"
   };
 
   // -----------------------------
@@ -883,7 +813,9 @@
 
   function productLink(name){
     const esc = escapeHtml(name);
-    return `<a href="#" class="product-link" data-product="${esc}">${esc}</a>`;
+    const url = PRODUCT_URLS[name];
+    if (!url) return esc;
+    return `<a href="${url}" target="_blank" rel="noopener" class="product-link">${esc}</a>`;
   }
 
   function linkifyProducts(text){
@@ -891,7 +823,9 @@
     for (const name of _productNames){
       const esc = escapeHtml(name);
       if (html.includes(esc)){
-        const link = `<a href="#" class="product-link" data-product="${esc}">${esc}</a>`;
+        const url = PRODUCT_URLS[name];
+        if (!url){ continue; }
+        const link = `<a href="${url}" target="_blank" rel="noopener" class="product-link">${esc}</a>`;
         html = html.split(esc).join(link);
       }
     }
@@ -976,42 +910,6 @@
       toast("Error", "Something broke in the recommendation logic. Open the browser console to view the exact error message.");
     }
   }
-
-  // -----------------------------
-  // Product modal
-  // -----------------------------
-  function showProductModal(productName){
-    const info = PRODUCT_INFO[productName];
-    if (!info) return;
-    $("modalTitle").textContent = productName;
-    $("modalBody").innerHTML = info;
-    $("productModal").classList.add("open");
-  }
-
-  function hideProductModal(){
-    $("productModal").classList.remove("open");
-  }
-
-  // Event delegation: any click on a .product-link anywhere in the page
-  document.addEventListener("click", function(e){
-    const link = e.target.closest(".product-link");
-    if (link){
-      e.preventDefault();
-      const name = link.getAttribute("data-product");
-      // Decode HTML entities back to plain text for lookup
-      const tmp = document.createElement("span");
-      tmp.innerHTML = name;
-      showProductModal(tmp.textContent);
-    }
-  });
-
-  $("modalClose").addEventListener("click", hideProductModal);
-  $("productModal").addEventListener("click", function(e){
-    if (e.target === this) hideProductModal();
-  });
-  document.addEventListener("keydown", function(e){
-    if (e.key === "Escape") hideProductModal();
-  });
 
   // Init
   renderConcernGroups();
