@@ -1,0 +1,160 @@
+/* ================================================
+   Dr. Barbara Sturm — Meraki Clinical Assistant
+   ================================================ */
+
+/* --- Design tokens --- */
+:root{
+  --bg:#0b0f14; --panel:#101826; --panel2:#0f1722; --text:#e8eef7; --muted:#a9b6c7;
+  --line:#243247; --accent:#7dd3fc; --good:#34d399; --warn:#fbbf24; --bad:#fb7185;
+  --shadow: 0 10px 30px rgba(0,0,0,.35);
+  --radius:18px;
+}
+
+/* --- Reset & base --- */
+*{box-sizing:border-box}
+body{
+  margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+  background: radial-gradient(1200px 700px at 20% -10%, rgba(125,211,252,.18), transparent 55%),
+              radial-gradient(900px 600px at 110% 30%, rgba(52,211,153,.14), transparent 45%),
+              var(--bg);
+  color:var(--text);
+}
+a{color:var(--accent)}
+
+/* --- Layout --- */
+.wrap{max-width:1200px; margin:0 auto; padding:24px 18px 48px}
+
+header{
+  display:flex; gap:14px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;
+  margin-bottom:18px;
+}
+.brand{display:flex; flex-direction:column; gap:6px}
+.title{font-size:18px; letter-spacing:.2px; font-weight:800}
+.subtitle{color:var(--muted); font-size:13px; line-height:1.4}
+
+.pillrow{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+.pill{
+  border:1px solid var(--line); background:rgba(16,24,38,.75);
+  padding:8px 10px; border-radius:999px; font-size:12px; color:var(--muted);
+}
+
+.grid{display:grid; grid-template-columns: 420px 1fr; gap:14px}
+@media (max-width: 980px){ .grid{grid-template-columns: 1fr;} }
+
+/* --- Cards --- */
+.card{
+  background: linear-gradient(180deg, rgba(16,24,38,.92), rgba(15,23,34,.92));
+  border:1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  overflow:hidden;
+}
+.card h2{
+  margin:0; padding:14px 16px; font-size:14px; letter-spacing:.2px;
+  border-bottom:1px solid var(--line);
+  background:rgba(15,23,34,.65);
+}
+.card .content{padding:14px 16px}
+
+/* --- Form elements --- */
+label{display:block; font-size:12px; color:var(--muted); margin:10px 0 6px}
+input[type="number"], select{
+  width:100%; padding:10px 10px; border-radius:12px;
+  border:1px solid var(--line); background:rgba(11,15,20,.55); color:var(--text);
+  outline:none;
+}
+input[type="number"]:focus, select:focus{border-color: rgba(125,211,252,.6)}
+
+.row{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+@media (max-width:520px){.row{grid-template-columns:1fr}}
+
+/* --- Buttons --- */
+.btnbar{display:flex; gap:10px; flex-wrap:wrap; margin-top:12px}
+button{
+  cursor:pointer; border:1px solid var(--line);
+  background: linear-gradient(180deg, rgba(125,211,252,.18), rgba(125,211,252,.08));
+  color:var(--text); padding:10px 12px; border-radius:14px; font-weight:700; font-size:13px;
+}
+button.secondary{background:rgba(16,24,38,.6)}
+button:disabled{opacity:.45; cursor:not-allowed}
+
+/* --- Note / info box --- */
+.note{
+  padding:10px 12px; border-radius:14px; border:1px dashed rgba(125,211,252,.45);
+  background:rgba(125,211,252,.06); color:var(--muted); font-size:12px; line-height:1.4;
+  margin-top:12px;
+}
+
+/* --- Concern groups & chips --- */
+.groups{display:grid; gap:12px}
+.group{
+  border:1px solid var(--line); border-radius:16px; overflow:hidden; background:rgba(11,15,20,.35);
+}
+.ghead{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  padding:10px 12px; border-bottom:1px solid var(--line);
+  background:rgba(15,23,34,.55);
+}
+.ghead strong{font-size:12px}
+.ghead span{color:var(--muted); font-size:12px}
+.gbody{padding:10px 12px; display:grid; gap:8px}
+.chips{display:flex; flex-wrap:wrap; gap:8px}
+.chip{
+  border:1px solid var(--line); background:rgba(16,24,38,.6);
+  padding:8px 10px; border-radius:999px; font-size:12px; color:var(--text);
+  display:flex; gap:8px; align-items:center;
+}
+.chip input{accent-color: var(--accent)}
+
+/* --- Output area --- */
+.outGrid{display:grid; grid-template-columns: 1fr; gap:14px}
+.sectionTitle{font-size:12px; color:var(--muted); letter-spacing:.25px; margin:0 0 8px}
+
+/* --- Badges --- */
+.badge{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px;
+  border:1px solid var(--line); background:rgba(16,24,38,.6); font-size:12px; color:var(--muted);
+}
+.badge.good{border-color:rgba(52,211,153,.45); color:rgba(167,243,208,.95)}
+.badge.warn{border-color:rgba(251,191,36,.45); color:rgba(253,230,138,.95)}
+.badge.bad{border-color:rgba(251,113,133,.55); color:rgba(254,202,202,.95)}
+
+/* --- Collapsible protocol --- */
+details{border:1px solid var(--line); border-radius:16px; background:rgba(11,15,20,.35); overflow:hidden}
+summary{list-style:none; cursor:pointer; padding:12px 12px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+  background:rgba(15,23,34,.55); border-bottom:1px solid var(--line);
+}
+summary::-webkit-details-marker{display:none}
+
+.steps{padding:12px}
+.step{display:grid; grid-template-columns: 38px 1fr; gap:10px; padding:8px 0; border-bottom:1px dashed rgba(36,50,71,.7)}
+.step:last-child{border-bottom:none}
+.num{width:32px; height:32px; border-radius:12px; display:grid; place-items:center; font-weight:800;
+  border:1px solid var(--line); background:rgba(16,24,38,.7);
+}
+.sTitle{font-weight:800; font-size:13px}
+.sMeta{color:var(--muted); font-size:12px; line-height:1.45}
+
+/* --- KPI row --- */
+.kpi{display:flex; gap:8px; flex-wrap:wrap; margin:10px 0 0}
+.kpi .badge{font-weight:700}
+
+/* --- Misc reusable --- */
+.list{margin:0; padding-left:18px; color:var(--muted); font-size:12px; line-height:1.5}
+.small{font-size:12px; color:var(--muted)}
+.hr{height:1px; background:var(--line); margin:12px 0}
+
+/* --- Toast notification --- */
+.toast{position:fixed; right:18px; bottom:18px; max-width:560px; z-index:50;
+  background:rgba(16,24,38,.96); border:1px solid var(--line); border-radius:16px; box-shadow:var(--shadow);
+  padding:12px 12px; display:none;
+}
+.toast strong{font-size:13px}
+.toast p{margin:6px 0 0; color:var(--muted); font-size:12px; line-height:1.35}
+
+/* --- Product links --- */
+.product-link{
+  color:var(--accent); text-decoration:none; cursor:pointer;
+  border-bottom:1px dotted rgba(125,211,252,.35);
+  transition: border-color .15s, color .15s;
+}
+.product-link:hover{border-bottom-color:var(--accent); color:#bae6fd}
